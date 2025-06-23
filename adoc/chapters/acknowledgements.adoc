@@ -92,6 +92,7 @@
   * Nuno Nobre, STFC Hartree Centre
   * Máté Nagy-Egri, Stream HPC
   * Bálint Soproni, Stream HPC
+  * Timothée David--Cléris, Univ. Grenoble Alpes, CNRS, IPAG
   * Tom Deakin, University of Bristol
   * Philip Salzmann, University of Innsbruck
   * Peter Thoman, University of Innsbruck
