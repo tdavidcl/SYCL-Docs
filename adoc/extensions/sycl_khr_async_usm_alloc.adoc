@@ -1,7 +1,8 @@
 [[sec:khr-async-usm-alloc]]
 = sycl_khr_async_usm_alloc
 
-This extension allows the user to perform usm allocation/free operations in a asynchroneous maner.
+This extension allows the user to perform usm allocation/free operations in
+a asynchroneous maner.
 
 [[sec:khr-async-usm-alloc-dependencies]]
 == Dependencies
@@ -12,7 +13,8 @@ This extension has no dependencies on other extensions.
 == Feature test macro
 
 An implementation supporting this extension must predefine the macro
-[code]#SYCL_KHR_ASYNC_USM_ALLOC# to one of the values defined in the table below.
+[code]#SYCL_KHR_ASYNC_USM_ALLOC# to one of the values defined in the table
+below.
 
 [%header,cols="1,5"]
 |===
@@ -26,26 +28,41 @@ An implementation supporting this extension must predefine the macro
 [[sec:khr-async-usm-alloc-func]]
 == Extensions to the sycl namespace
 
-This extension adds the async variants of the malloc/free functions to the [code]#sycl# namespace.
+This extension adds the async variants of the malloc/free functions to the
+[code]#sycl# namespace.
 
-In all following extensions all functions inherit the properties and signature of their 
-synchroneous counterpart except that their completion is tied to the completion of a returned 
-[code]#sycl::event#. All of them return a [code]#sycl::event# as part of a pair if the synchroneous function
-return a non void object, additionally all async allocation functions take 
-const [code]#std::vector<event>& depEvents = {}# as an additional argument to specify dependancies that must 
-be completed before the allocation is realized.
+In all following extensions all functions inherit the properties and
+signature of their synchroneous counterpart except that their completion is
+tied to the completion of a returned [code]#sycl::event#.
+All of them return a [code]#sycl::event# as part of a pair if the
+synchroneous function return a non void object, additionally all async
+allocation functions take
+const [code]#std::vector<event>& depEvents = {}# as an additional argument 
+to specify dependancies that must be completed before the allocation is
+realized.
 
-All async usm allocation functions will either return immediately if the underlying backend 
-provides async variants for allocations, or behave like their synchroneous conterpart if no 
-such variants are available. The allocations must be used only after the completion of the 
-event is guaranteed (e.g. by use of [code]#sycl::handler::depends_on#, or by passing the event 
-to another asynchroneous usm allocation function).
+All async usm allocation functions will either return immediately if the
+underlying backend provides async variants for allocations, or behave like
+their synchroneous conterpart if no such variants are available.
+The allocations must be used only after the completion of the event is
+guaranteed (e.g. by use of [code]#sycl::handler::depends_on#, or by passing
+the event to another asynchroneous usm allocation function).
 
-The following spec is designed to closely follow the USM allocation section of the sycl specification.
+The following spec is designed to closely follow the USM allocation section
+of the sycl specification.
+
+
+
+Note that only variants including a sycl::queue were kept.
+
+Question: Should we enforce that the alloc is valid for the whole underlying
+context under the queue such that multiple in_order_queues sharing a given
+context can all access the resulting alloc.
 
 == Device allocation functions
 
-The functions in <<table.usm.async.device.allocs>> allocate device USM in a asynchronous manner.
+The functions in <<table.usm.async.device.allocs>> allocate device USM in a
+asynchronous manner.
 
 [[table.usm.async.device.allocs]]
 .Device USM Allocation Functions
@@ -55,32 +72,7 @@ The functions in <<table.usm.async.device.allocs>> allocate device USM in a asyn
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_device_async(
-                size_t numBytes, 
-                const device& syclDevice,
-                const context& syclContext,
-                const std::vector<event>& depEvents = {}, 
-                const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_device_async(
-                size_t count, 
-                const device& syclDevice,
-                const context& syclContext,
-                const std::vector<event>& depEvents = {}, 
-                const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::malloc_device_async(
+sycl::event sycl::malloc_device_async(void*& ptr,
                 size_t numBytes, 
                 const queue& syclQueue,
                 const std::vector<event>& depEvents = {}, 
@@ -92,7 +84,7 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_device_async(
+sycl::event sycl::malloc_device_async(T*& ptr,
                 size_t count, 
                 const queue& syclQueue,
                 const std::vector<event>& depEvents = {}, 
@@ -103,34 +95,7 @@ TODO
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::aligned_alloc_device_async(
-                size_t alignment, 
-                size_t numBytes,
-                const device& syclDevice,
-                const context& syclContext,
-                const std::vector<event>& depEvents = {}, 
-                const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_device_async(
-                size_t alignment, 
-                size_t count,
-                const device& syclDevice,
-                const context& syclContext,
-                const std::vector<event>& depEvents = {}, 
-                const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_device_async(
+sycl::event sycl::aligned_alloc_device_async(void*& ptr,
                 size_t alignment, 
                 size_t numBytes,
                 const queue& syclQueue,
@@ -143,7 +108,7 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_device_async(
+sycl::event sycl::aligned_alloc_device_async(T*& ptr,
                 size_t alignment, 
                 size_t count,
                 const queue& syclQueue,
@@ -157,7 +122,8 @@ TODO
 
 == Host allocation functions
 
-The functions in <<table.usm.async.host.allocs>> allocate host USM in a asynchronous manner.
+The functions in <<table.usm.async.host.allocs>> allocate host USM in a
+asynchronous manner.
 
 [[table.usm.async.host.allocs]]
 .Host USM Allocation Functions
@@ -167,9 +133,9 @@ The functions in <<table.usm.async.host.allocs>> allocate host USM in a asynchro
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_host_async(
+sycl::event sycl::malloc_host_async(void*& ptr,
                 size_t numBytes, 
-                const context& syclContext,
+                const queue& syclQueue,
                 const std::vector<event>& depEvents = {}, 
                 const property_list& propList = {})
 ----
@@ -179,46 +145,23 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_host_async(
-                  size_t count, 
-                  const context& syclContext,
-                  const std::vector<event>& depEvents = {}, 
-                  const property_list& propList = {})
+sycl::event sycl::malloc_host_async(T*& ptr,
+                size_t count, 
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_host_async(
-                  size_t numBytes, 
-                  const queue& syclQueue,
-                  const std::vector<event>& depEvents = {}, 
-                  const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_host_async(
-                  size_t count, 
-                  const queue& syclQueue,
-                  const std::vector<event>& depEvents = {}, 
-                  const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_host_async(
-                  size_t alignment, 
-                  size_t numBytes,
-                  const context& syclContext,
-                  const std::vector<event>& depEvents = {},
-                  const property_list& propList = {})
+sycl::event sycl::aligned_alloc_host_async(void*& ptr,
+                size_t alignment, 
+                size_t numBytes,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
@@ -226,37 +169,12 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_host_async(
-              size_t alignment, 
-              size_t count,
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_host_async(
-              size_t alignment, 
-              size_t numBytes,
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_host_async(
-              size_t alignment, 
-              size_t count,
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
+sycl::event sycl::aligned_alloc_host_async(T*& ptr,
+                size_t alignment, 
+                size_t count,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
@@ -265,7 +183,8 @@ TODO
 
 == Shared allocation functions
 
-The functions in <<table.usm.async.shared.allocs>> allocate shared USM in a asynchronous manner.
+The functions in <<table.usm.async.shared.allocs>> allocate shared USM in a
+asynchronous manner.
 
 [[table.usm.async.shared.allocs]]
 .Shared USM Allocation Functions
@@ -275,12 +194,11 @@ The functions in <<table.usm.async.shared.allocs>> allocate shared USM in a asyn
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_shared_async(
-              size_t numBytes, 
-              const device& syclDevice,
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
+sycl::event sycl::malloc_shared_async(void*& ptr,
+                size_t numBytes, 
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
@@ -288,48 +206,23 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_shared_async(
-              size_t count, 
-              const device& syclDevice,
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
+sycl::event sycl::malloc_shared_async(T*& ptr,
+                size_t count, 
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_shared_async(
-              size_t numBytes, 
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_shared_async(
-              size_t count, 
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_shared_async(
-              size_t alignment, 
-              size_t numBytes,
-              const device& syclDevice,
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
+sycl::event sycl::aligned_alloc_shared_async(void*& ptr,
+                size_t alignment, 
+                size_t numBytes,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
@@ -337,38 +230,12 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_shared_async(
-              size_t alignment, 
-              size_t count,
-              const device& syclDevice,
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_shared_async(
-              size_t alignment, 
-              size_t numBytes,
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_shared_async(
-              size_t alignment, 
-              size_t count,
-              const queue& syclQueue,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
+sycl::event sycl::aligned_alloc_shared_async(T*& ptr,
+                size_t alignment, 
+                size_t count,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
 ----
 a@
 TODO
@@ -377,7 +244,8 @@ TODO
 
 == Parameterized allocation functions
 
-The functions in <<table.usm.async.param.allocs>> are the async variants of the standard parameterized allocation functions.
+The functions in <<table.usm.async.param.allocs>> are the async variants of
+the standard parameterized allocation functions.
 
 [[table.usm.async.param.allocs]]
 .Parameterized USM Allocation Functions
@@ -387,34 +255,7 @@ The functions in <<table.usm.async.param.allocs>> are the async variants of the 
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::malloc_async(
-              size_t numBytes, 
-              const device& syclDevice,
-              const context& syclContext, 
-              usm::alloc kind,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_async(
-              size_t count, 
-              const device& syclDevice,
-              const context& syclContext, 
-              usm::alloc kind,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::malloc_async(
+sycl::event sycl::malloc_async(void*& ptr,
               size_t numBytes, 
               const queue& syclQueue, 
               usm::alloc kind,
@@ -427,7 +268,7 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::malloc_async(
+sycl::event  sycl::malloc_async(T*& ptr,
               size_t count, 
               const queue& syclQueue, 
               usm::alloc kind,
@@ -439,35 +280,7 @@ TODO
 a@
 [source]
 ----
-std::pair<void*, sycl::event> sycl::aligned_alloc_async(
-              size_t alignment, size_t numBytes,
-              const device& syclDevice, 
-              const context& syclContext,
-              const std::vector<event>& depEvents = {}, 
-              usm::alloc kind, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_async(
-              size_t alignment, 
-              size_t count, 
-              const device& syclDevice,
-              const context& syclContext, 
-              usm::alloc kind,
-              const std::vector<event>& depEvents = {}, 
-              const property_list& propList = {})
-----
-a@
-TODO
-a@
-[source]
-----
-std::pair<void*, sycl::event> sycl::aligned_alloc_async(
+sycl::event sycl::aligned_alloc_async(void*& ptr,
               size_t alignment, 
               size_t numBytes,
               const queue& syclQueue, 
@@ -481,7 +294,7 @@ a@
 [source]
 ----
 template <typename T>
-std::pair<T*, sycl::event> sycl::aligned_alloc_async(
+sycl::event  sycl::aligned_alloc_async(T*& ptr,
               size_t alignment, 
               size_t count, 
               const queue& syclQueue,
@@ -501,41 +314,10 @@ TODO
 ----
 sycl::event free_async(
             void* ptr, 
-            const context& ctxt,
-            const std::vector<event>& depEvents = {} ); (1)
-sycl::event free_async(
-            void* ptr, 
             const queue& q,
-            const std::vector<event>& depEvents = {} );      (2)
+            const std::vector<event>& depEvents = {} )
 ----
 
-*Overload (1):*
-
-_Preconditions_:
-
-* [code]#ptr# points to memory allocated against [code]#ctxt# using one of the
-  USM allocation routines, or is a null pointer;
-
-* [code]#ptr# has not previously been deallocated; and
-
-* There are no in-progress or enqueued <<command, commands>> using the memory
-  pointed to by [code]#ptr#.
-
-_Effects_: Causes the memory pointed to by [code]#ptr# to be deallocated.
-
-{note}Whether [code]#free# is blocking or non-blocking is unspecified.
-Applications should not rely on [code]#free# for synchronization, nor assume
-that [code]#free# cannot cause deadlocks.{endnote}
-
-_Remarks_: If [code]#ptr# is null, this function has no effect.
-
-*Overload (2):*
-
-_Effects_: Equivalent to [code]#return free(ptr, q.get_context());#.
-
-{note}Although this overload accepts a [code]#queue# argument, it does not
-submit a "free" <<command>> to the device; the [code]#queue# argument is only
-used to determine the [code]#context# associated with [code]#ptr#.{endnote}
 
 [[sec:khr-async-usm-alloc-example]]
 == Example
@@ -550,10 +332,8 @@ int main() {
   sycl::queue Q;
   size_t n = 10;
 
-  auto ret = malloc_device_async<int>(n, Q);
-
-  int *ptr         = ret.first;
-  sycl::event &e_1 = ret.second;
+  int* ptr;
+  auto e_1 = sycl::malloc_device_async<int>(ptr,n, Q);
 
   sycl::event e_2 = Q.submit([&, ptr](sycl::handler &cgh) {
     cgh.depends_on(e_1);
@@ -563,7 +343,7 @@ int main() {
     });
   });
 
-  auto e_3 = free_async(ptr, Q, {e_2});
+  auto e_3 = sycl::free_async(ptr, Q, {e_2});
 
   e_3.wait();
 }
