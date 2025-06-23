@@ -1,0 +1,570 @@
+[[sec:khr-async-usm-alloc]]
+= sycl_khr_async_usm_alloc
+
+This extension allows the user to perform usm allocation/free operations in a asynchroneous maner.
+
+[[sec:khr-async-usm-alloc-dependencies]]
+== Dependencies
+
+This extension has no dependencies on other extensions.
+
+[[sec:khr-async-usm-alloc-feature-test]]
+== Feature test macro
+
+An implementation supporting this extension must predefine the macro
+[code]#SYCL_KHR_ASYNC_USM_ALLOC# to one of the values defined in the table below.
+
+[%header,cols="1,5"]
+|===
+|Value
+|Description
+
+|1
+|Initial version of this extension.
+|===
+
+[[sec:khr-async-usm-alloc-func]]
+== Extensions to the sycl namespace
+
+This extension adds the async variants of the malloc/free functions to the [code]#sycl# namespace.
+
+In all following extensions all functions inherit the properties and signature of their 
+synchroneous counterpart except that their completion is tied to the completion of a returned 
+[code]#sycl::event#. All of them return a [code]#sycl::event# as part of a pair if the synchroneous function
+return a non void object, additionally all async allocation functions take 
+const [code]#std::vector<event>& depEvents = {}# as an additional argument to specify dependancies that must 
+be completed before the allocation is realized.
+
+All async usm allocation functions will either return immediately if the underlying backend 
+provides async variants for allocations, or behave like their synchroneous conterpart if no 
+such variants are available. The allocations must be used only after the completion of the 
+event is guaranteed (e.g. by use of [code]#sycl::handler::depends_on#, or by passing the event 
+to another asynchroneous usm allocation function).
+
+The following spec is designed to closely follow the USM allocation section of the sycl specification.
+
+== Device allocation functions
+
+The functions in <<table.usm.async.device.allocs>> allocate device USM in a asynchronous manner.
+
+[[table.usm.async.device.allocs]]
+.Device USM Allocation Functions
+[width="100%",options="header",separator="@",cols="65%,35%"]
+|====
+@ Function @ Description
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_device_async(
+                size_t numBytes, 
+                const device& syclDevice,
+                const context& syclContext,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_device_async(
+                size_t count, 
+                const device& syclDevice,
+                const context& syclContext,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_device_async(
+                size_t numBytes, 
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_device_async(
+                size_t count, 
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_device_async(
+                size_t alignment, 
+                size_t numBytes,
+                const device& syclDevice,
+                const context& syclContext,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_device_async(
+                size_t alignment, 
+                size_t count,
+                const device& syclDevice,
+                const context& syclContext,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_device_async(
+                size_t alignment, 
+                size_t numBytes,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_device_async(
+                size_t alignment, 
+                size_t count,
+                const queue& syclQueue,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+
+|====
+
+== Host allocation functions
+
+The functions in <<table.usm.async.host.allocs>> allocate host USM in a asynchronous manner.
+
+[[table.usm.async.host.allocs]]
+.Host USM Allocation Functions
+[width="100%",options="header",separator="@",cols="65%,35%"]
+|====
+@ Function @ Description
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_host_async(
+                size_t numBytes, 
+                const context& syclContext,
+                const std::vector<event>& depEvents = {}, 
+                const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_host_async(
+                  size_t count, 
+                  const context& syclContext,
+                  const std::vector<event>& depEvents = {}, 
+                  const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_host_async(
+                  size_t numBytes, 
+                  const queue& syclQueue,
+                  const std::vector<event>& depEvents = {}, 
+                  const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_host_async(
+                  size_t count, 
+                  const queue& syclQueue,
+                  const std::vector<event>& depEvents = {}, 
+                  const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_host_async(
+                  size_t alignment, 
+                  size_t numBytes,
+                  const context& syclContext,
+                  const std::vector<event>& depEvents = {},
+                  const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_host_async(
+              size_t alignment, 
+              size_t count,
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_host_async(
+              size_t alignment, 
+              size_t numBytes,
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_host_async(
+              size_t alignment, 
+              size_t count,
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+
+|====
+
+== Shared allocation functions
+
+The functions in <<table.usm.async.shared.allocs>> allocate shared USM in a asynchronous manner.
+
+[[table.usm.async.shared.allocs]]
+.Shared USM Allocation Functions
+[width="100%",options="header",separator="@",cols="65%,35%"]
+|====
+@ Function @ Description
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_shared_async(
+              size_t numBytes, 
+              const device& syclDevice,
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_shared_async(
+              size_t count, 
+              const device& syclDevice,
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_shared_async(
+              size_t numBytes, 
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_shared_async(
+              size_t count, 
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_shared_async(
+              size_t alignment, 
+              size_t numBytes,
+              const device& syclDevice,
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_shared_async(
+              size_t alignment, 
+              size_t count,
+              const device& syclDevice,
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_shared_async(
+              size_t alignment, 
+              size_t numBytes,
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_shared_async(
+              size_t alignment, 
+              size_t count,
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+
+|====
+
+== Parameterized allocation functions
+
+The functions in <<table.usm.async.param.allocs>> are the async variants of the standard parameterized allocation functions.
+
+[[table.usm.async.param.allocs]]
+.Parameterized USM Allocation Functions
+[width="100%",options="header",separator="@",cols="65%,35%"]
+|====
+@ Function @ Description
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_async(
+              size_t numBytes, 
+              const device& syclDevice,
+              const context& syclContext, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_async(
+              size_t count, 
+              const device& syclDevice,
+              const context& syclContext, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::malloc_async(
+              size_t numBytes, 
+              const queue& syclQueue, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::malloc_async(
+              size_t count, 
+              const queue& syclQueue, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_async(
+              size_t alignment, size_t numBytes,
+              const device& syclDevice, 
+              const context& syclContext,
+              const std::vector<event>& depEvents = {}, 
+              usm::alloc kind, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_async(
+              size_t alignment, 
+              size_t count, 
+              const device& syclDevice,
+              const context& syclContext, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+std::pair<void*, sycl::event> sycl::aligned_alloc_async(
+              size_t alignment, 
+              size_t numBytes,
+              const queue& syclQueue, 
+              usm::alloc kind,
+              const std::vector<event>& depEvents = {}, 
+              const property_list& propList = {})
+----
+a@
+TODO
+a@
+[source]
+----
+template <typename T>
+std::pair<T*, sycl::event> sycl::aligned_alloc_async(
+              size_t alignment, 
+              size_t count, 
+              const queue& syclQueue,
+              const std::vector<event>& depEvents = {}, 
+              usm::alloc kind, const property_list& propList = {})
+----
+a@
+TODO
+
+|====
+
+
+== Memory deallocation functions
+
+.[apidef]#free_async#
+[source,role=synopsis,id=api:free_async]
+----
+sycl::event free_async(
+            void* ptr, 
+            const context& ctxt,
+            const std::vector<event>& depEvents = {} ); (1)
+sycl::event free_async(
+            void* ptr, 
+            const queue& q,
+            const std::vector<event>& depEvents = {} );      (2)
+----
+
+*Overload (1):*
+
+_Preconditions_:
+
+* [code]#ptr# points to memory allocated against [code]#ctxt# using one of the
+  USM allocation routines, or is a null pointer;
+
+* [code]#ptr# has not previously been deallocated; and
+
+* There are no in-progress or enqueued <<command, commands>> using the memory
+  pointed to by [code]#ptr#.
+
+_Effects_: Causes the memory pointed to by [code]#ptr# to be deallocated.
+
+{note}Whether [code]#free# is blocking or non-blocking is unspecified.
+Applications should not rely on [code]#free# for synchronization, nor assume
+that [code]#free# cannot cause deadlocks.{endnote}
+
+_Remarks_: If [code]#ptr# is null, this function has no effect.
+
+*Overload (2):*
+
+_Effects_: Equivalent to [code]#return free(ptr, q.get_context());#.
+
+{note}Although this overload accepts a [code]#queue# argument, it does not
+submit a "free" <<command>> to the device; the [code]#queue# argument is only
+used to determine the [code]#context# associated with [code]#ptr#.{endnote}
+
+[[sec:khr-async-usm-alloc-example]]
+== Example
+
+The example below demonstrates the usage of this extension.
+
+[source,,linenums]
+----
+#include <sycl/sycl.hpp>
+
+int main() {
+  sycl::queue Q;
+  size_t n = 10;
+
+  auto ret = malloc_device_async<int>(n, Q);
+
+  int *ptr         = ret.first;
+  sycl::event &e_1 = ret.second;
+
+  sycl::event e_2 = Q.submit([&, ptr](sycl::handler &cgh) {
+    cgh.depends_on(e_1);
+
+    cgh.parallel_for(sycl::range<1>{n}, [=](sycl::id<1> idx) {        
+      ptr[idx] = 0;
+    });
+  });
+
+  auto e_3 = free_async(ptr, Q, {e_2});
+
+  e_3.wait();
+}
+----
